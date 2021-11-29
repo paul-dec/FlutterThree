@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "108655638823",
+    "project_id": "flutterthree",
+    "storage_bucket": "flutterthree.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108655638823:android:f1eaafe6ecb34f2bf79102",
+        "android_client_info": {
+          "package_name": "com.epitech.flutterthree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108655638823-5bkn8id4sh22etl5hefjc6q35f8mj7ba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8UiGZHCPphb41WJUR0RVG2-YqUWp9aa4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108655638823-5bkn8id4sh22etl5hefjc6q35f8mj7ba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
