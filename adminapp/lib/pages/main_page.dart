@@ -54,13 +54,13 @@ class _MainPageState extends State<MainPage> {
             case ConnectionState.waiting:
             case ConnectionState.active:
               {
+                return CircularProgressIndicator();
                 // return GridView.count(
                 //   crossAxisCount: 2,
                 //   children: List.generate(9, (index) {
                 //     return (buildNftShimmer());
                 //   }),
                 // );
-                return (Text("yo"));
               }
             case ConnectionState.done:
               {
