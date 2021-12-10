@@ -68,23 +68,23 @@ class LoginPage extends StatelessWidget {
                                     );
                                     var z = <Map>[];
 
-                                    await FirebaseFirestore.instance.collection("users").get().then(
-                                          (value) {
-                                        for (var element in value.docs) {
-                                          var userDetails = {};
-                                          userDetails['id'] = element.id;
-                                          userDetails['name'] = element.data()['name'];
-                                          userDetails['role'] = element.data()['role'];
-                                          userDetails['NFT'] = element.data()['NFT'];
-                                          z.add(userDetails);
-                                        }
-                                      },
-                                    );
+                                    // await FirebaseFirestore.instance.collection("users").get().then(
+                                    //       (value) {
+                                    //     for (var element in value.docs) {
+                                    //       var userDetails = {};
+                                    //       userDetails['id'] = element.id;
+                                    //       userDetails['name'] = element.data()['name'];
+                                    //       userDetails['role'] = element.data()['role'];
+                                    //       userDetails['NFT'] = element.data()['NFT'];
+                                    //       z.add(userDetails);
+                                    //     }
+                                    //   },
+                                    // );
                                     if (adminchecker == 'admin' || adminchecker == 'manager') {
                                       final String roleChecker = adminchecker;
                                       Navigator.of(context)
                                           .pushReplacement(
-                                        MaterialPageRoute(builder: (context) => MainPage(user: user, role: roleChecker, z: z)),
+                                        MaterialPageRoute(builder: (context) => MainPage(user: user, role: roleChecker)),
                                       );
                                     } else {
                                       // error simple user does not have access to admin dashboard
