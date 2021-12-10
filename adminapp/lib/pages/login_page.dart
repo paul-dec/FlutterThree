@@ -1,6 +1,7 @@
 import 'package:adminapp/class/fire_auth.dart';
 import 'package:adminapp/class/validator.dart';
 import 'package:adminapp/pages/main_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -55,26 +56,44 @@ class LoginPage extends StatelessWidget {
                                     password: _passwordTextController.text, context: context,
                                   );
                                   if (user != null) {
-                                    Navigator.of(context)
-                                        .pushReplacement(
-                                      MaterialPageRoute(builder: (context) => MainPage(user: user)),
+                                    var adminchecker = 'user';
+                                    await FirebaseFirestore.instance.collection("users").get().then(
+                                      (value) {
+                                        for (var element in value.docs) {
+                                          if (element.id == user.uid) {
+                                            adminchecker = element.data()['role'];
+                                          }
+                                        }
+                                      },
                                     );
+                                    var z = <Map>[];
+
+                                    await FirebaseFirestore.instance.collection("users").get().then(
+                                          (value) {
+                                        for (var element in value.docs) {
+                                          var userDetails = {};
+                                          userDetails['id'] = element.id;
+                                          userDetails['name'] = element.data()['name'];
+                                          userDetails['role'] = element.data()['role'];
+                                          userDetails['NFT'] = element.data()['NFT'];
+                                          z.add(userDetails);
+                                        }
+                                      },
+                                    );
+                                    if (adminchecker == 'admin' || adminchecker == 'manager') {
+                                      final String roleChecker = adminchecker;
+                                      Navigator.of(context)
+                                          .pushReplacement(
+                                        MaterialPageRoute(builder: (context) => MainPage(user: user, role: roleChecker, z: z)),
+                                      );
+                                    } else {
+                                      // error simple user does not have access to admin dashboard
+                                    }
                                   }
                                 }
                               },
                               child: const Text(
                                 'Sign In',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-
-                              },
-                              child: const Text(
-                                'Register',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
