@@ -1,24 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterthree/BLoC/bloc.dart';
 import 'package:flutterthree/class/fire_auth.dart';
-import 'package:flutterthree/pages/profile_page.dart';
-import 'package:flutterthree/pages/register_page.dart';
-import 'package:flutterthree/styles.dart';
 import 'package:flutterthree/widgets/custom_button.dart';
 import 'package:flutterthree/widgets/custom_spacer.dart';
 import 'package:flutterthree/widgets/custom_textfield.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+import '../styles.dart';
 
-  Future<FirebaseApp> _initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-    return firebaseApp;
-  }
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
+  final pseudoController = TextEditingController();
   final passwordController = TextEditingController();
 
   String errorString = "";
@@ -29,7 +29,7 @@ class LoginPage extends StatelessWidget {
       backgroundColor: ThemeColor.xBlue,
       appBar: AppBar(
         backgroundColor: ThemeColor.xPurple,
-        title: const Text("Login", style: ThemeText.whiteTextBold,),
+        title: const Text("Register", style: ThemeText.whiteTextBold,),
       ),
       body: Center(
         child: Padding(
@@ -37,6 +37,20 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              StreamBuilder(
+                stream: bloc.name,
+                builder: (context, snapshot) {
+                  return CustomTextField(
+                    myController: pseudoController,
+                    myTextInputType: TextInputType.name,
+                    myHintText: 'Your name',
+                    obscureText: false,
+                    onChangedFunction: bloc.changeName,
+                    errorText: snapshot.error.toString() == 'null' ? '' : snapshot.error.toString(),
+                  );
+                },
+              ),
+              const CustomSpacer(),
               StreamBuilder(
                 stream: bloc.email,
                 builder: (context, snapshot) {
@@ -67,23 +81,14 @@ class LoginPage extends StatelessWidget {
               const CustomSpacer(),
               CustomButton(
                 buttonColor: ThemeColor.xPurple,
-                textValue: 'Sign In',
+                textValue: 'Register',
                 textStyle: ThemeText.whiteTextBold,
                 function: () async {
-                  postLogin(emailController.text, passwordController.text, context);
+                  postRegister();
                 },
               ),
               const CustomSpacer(),
-              CustomButton(
-                buttonColor: Colors.transparent,
-                textValue: 'Register',
-                textStyle: ThemeText.whiteTextItalic,
-                function: () async {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage()));
-                },
-              ),
-              const CustomSpacer(),
-              Text(errorString.replaceAll("Exception:", ""), style: ThemeText.xPurpleTextItalic,)
+              Text(errorString, style: ThemeText.xPurpleTextItalic,),
             ],
           ),
         ),
@@ -91,17 +96,15 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Future<void> postLogin(email, password, context) async {
-    User? user = await FireAuth.signInUsingEmailPassword(
-      email: email,
-      password: password,
-      context: context,
+  Future<void> postRegister() async {
+    var result = FirebaseFirestore.instance.collection("users");
+    User? user = await FireAuth.registerUsingEmailPassword(
+      email: emailController.text,
+      password: passwordController.text,
+      name: pseudoController.text,
     );
     if (user != null) {
-      Navigator.of(context)
-          .pushReplacement(
-        MaterialPageRoute(builder: (context) => ProfilePage(user: user)),
-      );
+      result.doc(user.uid).set({"role": "user", "name": pseudoController.text, "NFT": []}).then((value) => Navigator.of(context).pop());
     }
   }
 }

@@ -6,13 +6,14 @@ class NFTCard extends StatelessWidget {
   final String url;
   final String name;
   final String description;
+  final void Function() function;
 
-  const NFTCard({Key? key, required this.url, required this.name, required this.description}) : super(key: key);
+  const NFTCard({Key? key, required this.url, required this.name, required this.description, required this.function}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: function,
       child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,

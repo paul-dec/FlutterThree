@@ -1,7 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterthree/class/nft.dart';
+import 'package:flutterthree/functions/build_shimmer.dart';
+import 'package:flutterthree/functions/nft_api.dart';
+import 'package:flutterthree/pages/login_page.dart';
+import 'package:flutterthree/pages/upload_page.dart';
 import 'package:flutterthree/widgets/nft_card.dart';
+
+import '../styles.dart';
+import 'nft_details.dart';
 
 class ProfilePage extends StatefulWidget {
   final User user;
@@ -12,38 +19,94 @@ class ProfilePage extends StatefulWidget {
 }
 class _ProfilePageState extends State<ProfilePage> {
   late User _currentUser;
+  late Future<AllNFT?> _allNFTs;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
-    _currentUser = widget.user;
     super.initState();
+    _currentUser = widget.user;
+    _allNFTs = initNFTs(_currentUser.uid);
   }
 
-  List<String> nfts = [
-    'https://lh3.googleusercontent.com/GVEpa2Ijl4P7X9by-ewolxAGowGLz4tAOeKpiEIknMceLO6DmVbHqkmOlCE3N_Tkan8m0tyDET_-WTSv9cJShdF2y3XNFYc6SPdb=w335',
-    'https://lh3.googleusercontent.com/XvgxjCF2ZgGVnH0sV4Gsi2culHTnyWHHzypembKMKXNm0TfMhMA5-lRs529Tn_wJEewidNYWMeHW7gzcE2o31YvLW8HJZDonu9FJ=w335',
-    'https://lh3.googleusercontent.com/Va2Globuksc2UkgiLnjdNZlZVSOCx52kAhSTzYISlmkhGN0cUnLjQBi2d4DGomFShglNekv5ZHOFlZ26jUc_MgTPCyeRHM-TxOgk=w335',
-    'https://lh3.googleusercontent.com/pQCVnXbnvzZTBFywvhpdm4sf6KsAG_EYVu_mAW4kjVWdNGa6f9vtmks5mnvcxNWnLdRb1yWd4NkpnICNHMuhpYxXhbDUO3cqrE2LuGY=w335',
-    'https://lh3.googleusercontent.com/ZFIxzeqJ3HENutDe8FZtgIhuxLAgfq6oWIBYV4p3Sf_TjKOTNJ9Pp524G2GHHAkAc6lth-ql0-df87oCbsVyIeZLX2UozBPYGVY20g=w335'
-  ];
+  @override
+  void dipose(){
+    super.dispose();
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _allNFTs = refreshNFTs(_currentUser.uid, _allNFTs);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeColor.xBlue,
       appBar: AppBar(
-        title: Text('Wallet: ${_currentUser.email}'),
+        backgroundColor: ThemeColor.xPurple,
+        title: Text('Wallet: ${_currentUser.email}', style: ThemeText.whiteTextBold,),
+        leading: IconButton(onPressed: () => {
+        Navigator.of(context)
+            .pushReplacement(
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        )
+        }, icon: const Icon(Icons.logout)),
+        actions: [
+          IconButton(onPressed: _refresh, icon: const Icon(Icons.refresh)),
+        ],
       ),
-      body: GridView.count(
-          crossAxisCount: 2,
-          children: List.generate(nfts.length, (index) {
-            return Center(
-                child: NFTCard(
-                    url: nfts[index],
-                    name: nfts[index],
-                    description: nfts[index]
-                ));
-          })
-      )
+      body: FutureBuilder<AllNFT?>(
+          future: _allNFTs,
+          builder: (BuildContext context, AsyncSnapshot<AllNFT?> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                {
+                  return GridView.count(
+                    crossAxisCount: 2,
+                    children: List.generate(9, (index) {
+                      return (buildNftShimmer());
+                    }),
+                  );
+                }
+              case ConnectionState.done:
+                {
+                  if (snapshot.hasData) {
+                    return RefreshIndicator(
+                        key: _refreshIndicatorKey,
+                        onRefresh: _refresh,
+                        child: GridView.count(
+                            crossAxisCount: 2,
+                            children: List.generate(snapshot.data!.all.length, (index) {
+                              return Center(
+                                  child: NFTCard(
+                                    url: snapshot.data!.all[index].image,
+                                    name: snapshot.data!.all[index].name,
+                                    description: snapshot.data!.all[index].description,
+                                    function: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NFTDetails(name: snapshot.data!.all[index].name, url: snapshot.data!.all[index].image, desc: snapshot.data!.all[index].description))),
+                                  )
+                              );
+                            })
+                        )
+                    );
+                  } else {
+                    return Center(
+                      child: Text(snapshot.error.toString(), style: ThemeText.whiteTextBold),
+                    );
+                  }
+                }
+            }
+          }
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: ThemeColor.xPurple,
+        child: const Icon(Icons.add, color: Colors.white,),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UploadPage(uid: _currentUser.uid,))).then((value) => {if (value != Null && value == true) _refresh()}),
+      ),
     );
   }
 }
