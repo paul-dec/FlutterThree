@@ -1,6 +1,7 @@
 import 'package:adminapp/class/fire_auth.dart';
 import 'package:adminapp/class/validator.dart';
 import 'package:adminapp/pages/main_page.dart';
+import 'package:adminapp/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,8 +22,10 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeColor.xBlue,
       appBar: AppBar(
-        title: const Text('Firebase Authentication'),
+        title: const Text('Firebase Authentication', style: ThemeText.whiteTextBold,),
+        backgroundColor: ThemeColor.xPurple,
       ),
       body: FutureBuilder(
         future: _initializeFirebase(),
@@ -35,11 +38,13 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       TextFormField(
+                        style: ThemeText.whiteText,
                         controller: _emailTextController,
                         validator: (value) => Validator.validateEmail(email: value!),
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
+                        style: ThemeText.whiteText,
                         controller: _passwordTextController,
                         obscureText: true,
                         validator: (value) => Validator.validatePassword(password: value!),

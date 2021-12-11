@@ -1,8 +1,12 @@
 import 'package:adminapp/class/nftuser.dart';
+import 'package:adminapp/pages/ntf_page.dart';
+import 'package:adminapp/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'login_page.dart';
 
 class MainPage extends StatefulWidget {
   final User user;
@@ -43,8 +47,16 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeColor.xBlue,
         appBar: AppBar(
-          title: Text(_currentRole + ' Hello ${_currentUser.email}'),
+          title: Text(_currentRole + ' Hello ${_currentUser.email}', style: ThemeText.whiteTextBold,),
+          backgroundColor: ThemeColor.xPurple,
+          leading: IconButton(onPressed: () => {
+            Navigator.of(context)
+                .pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            )
+          }, icon: const Icon(Icons.logout, color: Colors.white,)),
         ),
         body: FutureBuilder<List<Nftuser>?>(
         future: _allNFTs,
@@ -66,22 +78,29 @@ class _MainPageState extends State<MainPage> {
               {
                 if (snapshot.hasData) {
                   return (
-                  ListView(
-                  children: ListTile.divideTiles(
-                  color: Colors.deepPurple,
-                  tiles: snapshot.data!.map((item) => ListTile(
-                  title: Text(item.name),
-                  subtitle: Text(item.role),
-                  trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {},
-                  ),
-                  ))).toList()
-                  )
+                    ListView(
+                      children: ListTile.divideTiles(
+                        color: Colors.deepPurple,
+                        tiles: snapshot.data!.map((item) => ListTile(
+                          title: Text(item.name, style: ThemeText.whiteTextBold,),
+                          subtitle: Text(item.role, style: ThemeText.whiteText,),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.white,),
+                            onPressed: () {},
+                          ),
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(
+                              MaterialPageRoute(builder: (context) => NftPage(nfts: item.nfts)),
+                            );
+                          },
+                        ))
+                      ).toList()
+                    )
                   );
                 } else {
                   return Center(
-                    child: Text(snapshot.error.toString()),
+                    child: Text(snapshot.error.toString(), style: ThemeText.xPurpleTextItalic,),
                   );
                 }
               }
