@@ -86,7 +86,17 @@ class _MainPageState extends State<MainPage> {
                           subtitle: Text(item.role, style: ThemeText.whiteText,),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white,),
-                            onPressed: () {},
+                            onPressed: () {
+                              if (item.role == 'admin') {
+                                // _currentUser.delete();
+                                print(item.id);
+                                final collection = FirebaseFirestore.instance.collection('users');
+                                collection.doc(item.id) // <-- Doc ID to be deleted.
+                                    .delete() // <-- Delete
+                                    .then((_) => print('Deleted'))
+                                    .catchError((error) => print('Delete failed: $error'));
+                              }
+                            },
                           ),
                           onTap: () {
                             Navigator.of(context)
