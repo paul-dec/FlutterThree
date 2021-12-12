@@ -18,6 +18,9 @@ class NftdetailsPage extends StatefulWidget {
 class _NftdetailsPageState extends State<NftdetailsPage> {
   late Nftart _currentNft;
   late String _nftuserid;
+  late String _nftname;
+  late String _nftimage;
+  late String _nftdesc;
   late int _nftnumber;
   // final TextEditingController _imageTextController = TextEditingController();
   // final TextEditingController _nameTextController = TextEditingController();
@@ -29,6 +32,9 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
   @override
   initState() {
     _currentNft = widget.nft;
+    _nftname = _currentNft.name;
+    _nftimage = _currentNft.image;
+    _nftdesc = _currentNft.desc;
     _nftuserid = widget.nftuserid;
     _nftnumber = widget.nftnumber;
     _imageTextController = TextEditingController(text: _currentNft.image);
@@ -43,14 +49,20 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
       backgroundColor: ThemeColor.xBlue,
       appBar: AppBar(
         title: const Text("Details", style: ThemeText.whiteTextBold,),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
         backgroundColor: ThemeColor.xPurple,
       ),
       body:
        Column(
         children: [
-          WebImage(url: _currentNft.image),
-          Text(_currentNft.name, style: ThemeText.whiteTextBold,),
-          Text(_currentNft.desc, style: ThemeText.whiteText,),
+          WebImage(url: _nftimage),
+          Text(_nftname, style: ThemeText.whiteTextBold,),
+          Text(_nftdesc, style: ThemeText.whiteText,),
           TextField(
             style: ThemeText.whiteText,
             controller: _imageTextController,
@@ -75,9 +87,14 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
                     var docSnapshot = await collection.doc(_nftuserid).get();
                     Map<String, dynamic>? data = docSnapshot.data();
                     data!['NFT'][_nftnumber]['desc'] = _descriptionTextController.text;
-                    data!['NFT'][_nftnumber]['image'] = _imageTextController.text;
-                    data!['NFT'][_nftnumber]['name'] = _nameTextController.text;
+                    data['NFT'][_nftnumber]['image'] = _imageTextController.text;
+                    data['NFT'][_nftnumber]['name'] = _nameTextController.text;
                     collection.doc(_nftuserid).update(data);
+                    setState(() {
+                      _nftdesc = _descriptionTextController.text;
+                      _nftimage = _imageTextController.text;
+                      _nftname = _nameTextController.text;
+                    });
                   },
                   child: const Text(
                     'Edit NFT',

@@ -26,6 +26,10 @@ class _NftPageState extends State<NftPage> {
     super.initState();
   }
 
+  _refresh() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,10 +51,7 @@ class _NftPageState extends State<NftPage> {
                 ],
               ),
             onTap: () => {
-              Navigator.of(context)
-                  .push(
-                MaterialPageRoute(builder: (context) => NftdetailsPage(nft: _currentNft[index], nftuserid: _nftuserid, nftnumber: index)),
-              )
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NftdetailsPage(nft: _currentNft[index], nftuserid: _nftuserid, nftnumber: index))).then((value) => {if (value != Null && value == true) _refresh()}),
             },
           );
         }),
