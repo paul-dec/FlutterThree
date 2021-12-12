@@ -39,62 +39,66 @@ class _NftaddPageState extends State<NftaddPage> {
         ),
         backgroundColor: ThemeColor.xPurple,
       ),
-      body:
-       Column(
-        children: [
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _imageTextController,
-            decoration: const InputDecoration(
-              hintText: 'Image url',
-              hintStyle: TextStyle(color: Colors.grey)
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _nameTextController,
-            decoration: const InputDecoration(
-              hintText: 'Name of the NFT',
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _descriptionTextController,
-            decoration: const InputDecoration(
-              hintText: 'Custom description of the NFT',
-              hintStyle: TextStyle(color: Colors.grey)
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
             children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    var collection = FirebaseFirestore.instance.collection('users');
-                    var docSnapshot = await collection.doc(_nftuserid).get();
-                    Map<String, dynamic>? data = docSnapshot.data();
-                    data!['NFT'].add({
-                      'name': _nameTextController.text,
-                      'image': _imageTextController.text,
-                      'desc': _descriptionTextController.text
-                    });
-                    collection.doc(_nftuserid).update(data);
-                    Navigator.of(context).pop(true);
-                  },
-                  child: const Text(
-                    'Add an NFT',
-                    style: TextStyle(color: Colors.white),
-                  ),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _imageTextController,
+                decoration: const InputDecoration(
+                  hintText: 'Image url',
+                  hintStyle: TextStyle(color: Colors.grey)
                 ),
               ),
+              const SizedBox(height: 8.0),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _nameTextController,
+                decoration: const InputDecoration(
+                  hintText: 'Name of the NFT',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _descriptionTextController,
+                decoration: const InputDecoration(
+                  hintText: 'Custom description of the NFT',
+                  hintStyle: TextStyle(color: Colors.grey)
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        var collection = FirebaseFirestore.instance.collection('users');
+                        var docSnapshot = await collection.doc(_nftuserid).get();
+                        Map<String, dynamic>? data = docSnapshot.data();
+                        data!['NFT'].add({
+                          'name': _nameTextController.text,
+                          'image': _imageTextController.text,
+                          'desc': _descriptionTextController.text
+                        });
+                        collection.doc(_nftuserid).update(data);
+                        Navigator.of(context).pop(true);
+                      },
+                      child: const Text(
+                        'Add an NFT',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              )
             ],
           )
-        ],
-      )
-    );
+          )
+        ),
+      );
   }
 }

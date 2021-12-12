@@ -45,32 +45,6 @@ class _NftPageState extends State<NftPage> {
         title: const Text("Details", style: ThemeText.whiteTextBold,),
         backgroundColor: ThemeColor.xPurple,
       ),
-<<<<<<< HEAD
-      body: GridView.count(
-        crossAxisCount: 2,
-        children: List.generate(_currentNft.length, (index) {
-          return GestureDetector(
-            child:
-              Column(
-                children: [
-                  WebImage(url: _currentNft[index].image),
-                  Text(_currentNft[index].name, style: ThemeText.whiteTextBold,),
-                  Text(_currentNft[index].desc, style: ThemeText.whiteText,)
-                ],
-              ),
-            onTap: () => {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NftdetailsPage(nft: _currentNft[index], nftuserid: _nftuserid, nftnumber: index))).then((value) => {if (value != Null && value == true) _refresh()}),
-            },
-          );
-        }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => NftaddPage(nftuserid: _nftuserid))).then((value) => {if (value != Null && value == true) _refresh()});
-        },
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add),
-=======
       body: FutureBuilder<List<NftArt>?>(
           future: _currentNft,
           builder: (BuildContext context, AsyncSnapshot<List<NftArt>?> snapshot) {
@@ -111,7 +85,13 @@ class _NftPageState extends State<NftPage> {
                 }
             }
           }
->>>>>>> 8559d3857f3b4468742743e838c3c625a7101bd8
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NftaddPage(nftuserid: _nftUserID))).then((value) => {if (value != Null && value == true) _refresh()});
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
     );
   }

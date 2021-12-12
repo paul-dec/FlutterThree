@@ -54,47 +54,10 @@ class _NftDetailsPageState extends State<NftDetailsPage> {
         ),
         backgroundColor: ThemeColor.xPurple,
       ),
-<<<<<<< HEAD
-      body:
-       Column(
-        children: [
-          WebImage(url: _nftimage),
-          Text(_nftname, style: ThemeText.whiteTextBold,),
-          Text(_nftdesc, style: ThemeText.whiteText,),
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _imageTextController,
-            decoration: const InputDecoration(
-                hintText: 'Image url',
-                hintStyle: TextStyle(color: Colors.grey)
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _nameTextController,
-            decoration: const InputDecoration(
-                hintText: 'Name of the NFT',
-                hintStyle: TextStyle(color: Colors.grey)
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          TextField(
-            style: ThemeText.whiteText,
-            controller: _descriptionTextController,
-            decoration: const InputDecoration(
-                hintText: 'Custom description of the NFT',
-                hintStyle: TextStyle(color: Colors.grey)
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-=======
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
->>>>>>> 8559d3857f3b4468742743e838c3c625a7101bd8
             children: [
               WebImage(url: _nftImage),
               Text(_nftName, style: ThemeText.whiteTextBold,),
