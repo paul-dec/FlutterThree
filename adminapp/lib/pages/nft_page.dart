@@ -49,7 +49,7 @@ class _NftPageState extends State<NftPage> {
             onTap: () => {
               Navigator.of(context)
                   .push(
-                MaterialPageRoute(builder: (context) => NftdetailsPage(nft: _currentNft[index], nftuserid: _nftuserid)),
+                MaterialPageRoute(builder: (context) => NftdetailsPage(nft: _currentNft[index], nftuserid: _nftuserid, nftnumber: index)),
               )
             },
           );

@@ -1,14 +1,16 @@
 import 'package:adminapp/class/nftart.dart';
 import 'package:adminapp/styles.dart';
 import 'package:adminapp/widgets/web_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NftdetailsPage extends StatefulWidget {
   final Nftart nft;
   final String nftuserid;
+  final int nftnumber;
 
-  const NftdetailsPage({Key? key, required this.nft, required this.nftuserid}) : super(key: key);
+  const NftdetailsPage({Key? key, required this.nft, required this.nftuserid, required this.nftnumber}) : super(key: key);
 
   @override
   _NftdetailsPageState createState() => _NftdetailsPageState();
@@ -16,14 +18,22 @@ class NftdetailsPage extends StatefulWidget {
 class _NftdetailsPageState extends State<NftdetailsPage> {
   late Nftart _currentNft;
   late String _nftuserid;
-  final TextEditingController _imageTextController = TextEditingController();
-  final TextEditingController _nameTextController = TextEditingController();
-  final TextEditingController _descriptionTextController = TextEditingController();
+  late int _nftnumber;
+  // final TextEditingController _imageTextController = TextEditingController();
+  // final TextEditingController _nameTextController = TextEditingController();
+  // final TextEditingController _descriptionTextController = TextEditingController();
+  late TextEditingController _imageTextController;
+  late TextEditingController _nameTextController;
+  late TextEditingController _descriptionTextController;
 
   @override
   initState() {
     _currentNft = widget.nft;
     _nftuserid = widget.nftuserid;
+    _nftnumber = widget.nftnumber;
+    _imageTextController = TextEditingController(text: _currentNft.image);
+    _nameTextController = TextEditingController(text: _currentNft.name);
+    _descriptionTextController = TextEditingController(text: _currentNft.desc);
     super.initState();
   }
 
@@ -41,17 +51,17 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
           WebImage(url: _currentNft.image),
           Text(_currentNft.name, style: ThemeText.whiteTextBold,),
           Text(_currentNft.desc, style: ThemeText.whiteText,),
-          TextFormField(
+          TextField(
             style: ThemeText.whiteText,
             controller: _imageTextController,
           ),
           const SizedBox(height: 8.0),
-          TextFormField(
+          TextField(
             style: ThemeText.whiteText,
             controller: _nameTextController,
           ),
           const SizedBox(height: 8.0),
-          TextFormField(
+          TextField(
             style: ThemeText.whiteText,
             controller: _descriptionTextController,
           ),
@@ -61,6 +71,13 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
+                    var collection = FirebaseFirestore.instance.collection('users');
+                    var docSnapshot = await collection.doc(_nftuserid).get();
+                    Map<String, dynamic>? data = docSnapshot.data();
+                    data!['NFT'][_nftnumber]['desc'] = _descriptionTextController.text;
+                    data!['NFT'][_nftnumber]['image'] = _imageTextController.text;
+                    data!['NFT'][_nftnumber]['name'] = _nameTextController.text;
+                    collection.doc(_nftuserid).update(data);
                   },
                   child: const Text(
                     'Edit NFT',
@@ -71,6 +88,11 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
+                    var collection = FirebaseFirestore.instance.collection('users');
+                    var docSnapshot = await collection.doc(_nftuserid).get();
+                    Map<String, dynamic>? data = docSnapshot.data();
+                    data!['NFT'].removeAt(_nftnumber);
+                    collection.doc(_nftuserid).update(data);
                   },
                   child: const Text(
                     'Delete NFT',
