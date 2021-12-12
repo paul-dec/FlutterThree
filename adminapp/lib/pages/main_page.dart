@@ -1,10 +1,11 @@
 import 'package:adminapp/class/nftuser.dart';
-import 'package:adminapp/pages/ntf_page.dart';
+import 'package:adminapp/pages/nft_page.dart';
 import 'package:adminapp/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'login_page.dart';
 
@@ -42,6 +43,28 @@ class _MainPageState extends State<MainPage> {
       },
     );
     return z;
+  }
+  Future<void> refreshUsers() async {
+    List<Nftuser> z = [];
+
+    await FirebaseFirestore.instance.collection("users").get().then(
+          (value) {
+        for (var element in value.docs) {
+          var userDetails = Nftuser.fromJson(element.data(), element.id);
+          z.add(userDetails);
+        }
+      },
+    );
+    _allNFTs = z as Future<List<Nftuser>?>;
+    Fluttertoast.showToast(
+      msg: "User Successfully deleted",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0
+    );
   }
 
   @override
@@ -87,21 +110,43 @@ class _MainPageState extends State<MainPage> {
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white,),
                             onPressed: () {
-                              if (item.role == 'admin') {
-                                // _currentUser.delete();
-                                print(item.id);
+                              if (_currentRole == 'admin') {
+                                if (_currentUser.uid == item.id) {
+                                  Fluttertoast.showToast(
+                                      msg: "You can't delete your own Profile",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  );
+                                  return;
+                                }
+                                _currentUser.delete();
                                 final collection = FirebaseFirestore.instance.collection('users');
                                 collection.doc(item.id) // <-- Doc ID to be deleted.
                                     .delete() // <-- Delete
-                                    .then((_) => print('Deleted'))
-                                    .catchError((error) => print('Delete failed: $error'));
+                                    .then((_) =>
+                                      refreshUsers()
+                                    )
+                                    .catchError((error) => Fluttertoast.showToast(
+                                      msg: "Error while deleting the account",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  )
+                                );
                               }
                             },
                           ),
                           onTap: () {
                             Navigator.of(context)
                                 .push(
-                              MaterialPageRoute(builder: (context) => NftPage(nfts: item.nfts)),
+                              MaterialPageRoute(builder: (context) => NftPage(nfts: item.nfts, nftuserid: item.id)),
                             );
                           },
                         ))
