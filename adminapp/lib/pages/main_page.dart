@@ -99,7 +99,36 @@ class _MainPageState extends State<MainPage> {
                         color: Colors.deepPurple,
                         tiles: snapshot.data!.map((item) => ListTile(
                           title: Text(item.name, style: ThemeText.whiteTextBold,),
-                          subtitle: Text(item.role, style: ThemeText.whiteText,),
+                          subtitle: DropdownButton<String>(
+                            value: item.role,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 0,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String? newValue) async {
+                              var collection = FirebaseFirestore.instance.collection('users');
+                              var docSnapshot = await collection.doc(item.id).get();
+                              Map<String, dynamic>? data = docSnapshot.data();
+                              data!['role'] = newValue;
+                              await collection.doc(item.id).update(data);
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation1, animation2) => MainPage(user: _currentUser, role: _currentRole),
+                                  transitionDuration: Duration.zero,
+                                )
+                              );
+                            },
+                            items: <String>['admin', 'manager', 'user']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
                           trailing: _currentRole == "admin" ? IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white,),
                             onPressed: () {

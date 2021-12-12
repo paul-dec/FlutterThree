@@ -3,7 +3,7 @@ import 'package:adminapp/class/nftart.dart';
 class NftUser {
   final String id;
   final String name;
-  final String role;
+  late final String role;
   final List<NftArt> nfts;
 
   NftUser({required this.id, required this.name, required this.role, required this.nfts});
