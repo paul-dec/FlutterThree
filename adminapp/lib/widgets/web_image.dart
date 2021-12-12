@@ -9,8 +9,8 @@ class WebImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 400,
+    return SizedBox(
+      height: MediaQuery.of(context).size.width / 3,
       child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,

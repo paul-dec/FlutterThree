@@ -3,7 +3,6 @@ import 'package:adminapp/pages/nft_page.dart';
 import 'package:adminapp/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -21,7 +20,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late User _currentUser;
   late String _currentRole;
-  late Future<List<Nftuser>?> _allNFTs;
+  late Future<List<NftUser>?> _allNFTs;
 
   @override
   initState() {
@@ -31,31 +30,30 @@ class _MainPageState extends State<MainPage> {
     super.initState();
   }
 
-  Future<List<Nftuser>> checkUsers() async {
-    List<Nftuser> z = [];
+  Future<List<NftUser>> checkUsers() async {
+    List<NftUser> z = [];
 
     await FirebaseFirestore.instance.collection("users").get().then(
           (value) {
         for (var element in value.docs) {
-          var userDetails = Nftuser.fromJson(element.data(), element.id);
+          var userDetails = NftUser.fromJson(element.data(), element.id);
           z.add(userDetails);
         }
       },
     );
     return z;
   }
-  Future<void> refreshUsers() async {
-    List<Nftuser> z = [];
+  Future<List<NftUser>> refreshUsers() async {
+    List<NftUser> z = [];
 
     await FirebaseFirestore.instance.collection("users").get().then(
           (value) {
         for (var element in value.docs) {
-          var userDetails = Nftuser.fromJson(element.data(), element.id);
+          var userDetails = NftUser.fromJson(element.data(), element.id);
           z.add(userDetails);
         }
       },
     );
-    _allNFTs = z as Future<List<Nftuser>?>;
     Fluttertoast.showToast(
       msg: "User Successfully deleted",
       toastLength: Toast.LENGTH_SHORT,
@@ -65,6 +63,7 @@ class _MainPageState extends State<MainPage> {
       textColor: Colors.white,
       fontSize: 16.0
     );
+    return z;
   }
 
   @override
@@ -77,25 +76,19 @@ class _MainPageState extends State<MainPage> {
           leading: IconButton(onPressed: () => {
             Navigator.of(context)
                 .pushReplacement(
-              MaterialPageRoute(builder: (context) => LoginPage()),
+              MaterialPageRoute(builder: (context) => const LoginPage()),
             )
           }, icon: const Icon(Icons.logout, color: Colors.white,)),
         ),
-        body: FutureBuilder<List<Nftuser>?>(
+        body: FutureBuilder<List<NftUser>?>(
         future: _allNFTs,
-        builder: (BuildContext context, AsyncSnapshot<List<Nftuser>?> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<NftUser>?> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
               {
-                return CircularProgressIndicator();
-                // return GridView.count(
-                //   crossAxisCount: 2,
-                //   children: List.generate(9, (index) {
-                //     return (buildNftShimmer());
-                //   }),
-                // );
+                return const CircularProgressIndicator();
               }
             case ConnectionState.done:
               {
@@ -107,7 +100,7 @@ class _MainPageState extends State<MainPage> {
                         tiles: snapshot.data!.map((item) => ListTile(
                           title: Text(item.name, style: ThemeText.whiteTextBold,),
                           subtitle: Text(item.role, style: ThemeText.whiteText,),
-                          trailing: IconButton(
+                          trailing: _currentRole == "admin" ? IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white,),
                             onPressed: () {
                               if (_currentRole == 'admin') {
@@ -123,30 +116,28 @@ class _MainPageState extends State<MainPage> {
                                   );
                                   return;
                                 }
-                                _currentUser.delete();
                                 final collection = FirebaseFirestore.instance.collection('users');
                                 collection.doc(item.id) // <-- Doc ID to be deleted.
                                     .delete() // <-- Delete
-                                    .then((_) =>
-                                      refreshUsers()
-                                    )
-                                    .catchError((error) => Fluttertoast.showToast(
-                                      msg: "Error while deleting the account",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.CENTER,
-                                      timeInSecForIosWeb: 1,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 16.0
-                                  )
-                                );
+                                    .then((_) {setState(() {
+                                      _allNFTs = refreshUsers();
+                                  });}
+                                ).catchError((error) => Fluttertoast.showToast(
+                                    msg: "Error while deleting the account",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0
+                                ));
                               }
                             },
-                          ),
+                          ) : const SizedBox.shrink(),
                           onTap: () {
                             Navigator.of(context)
                                 .push(
-                              MaterialPageRoute(builder: (context) => NftPage(nfts: item.nfts, nftuserid: item.id)),
+                              MaterialPageRoute(builder: (context) => NftPage(nfts: item.nfts, nftUserID: item.id)),
                             );
                           },
                         ))
