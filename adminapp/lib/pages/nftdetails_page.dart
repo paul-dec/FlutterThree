@@ -66,16 +66,28 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
           TextField(
             style: ThemeText.whiteText,
             controller: _imageTextController,
+            decoration: const InputDecoration(
+                hintText: 'Image url',
+                hintStyle: TextStyle(color: Colors.grey)
+            ),
           ),
           const SizedBox(height: 8.0),
           TextField(
             style: ThemeText.whiteText,
             controller: _nameTextController,
+            decoration: const InputDecoration(
+                hintText: 'Name of the NFT',
+                hintStyle: TextStyle(color: Colors.grey)
+            ),
           ),
           const SizedBox(height: 8.0),
           TextField(
             style: ThemeText.whiteText,
             controller: _descriptionTextController,
+            decoration: const InputDecoration(
+                hintText: 'Custom description of the NFT',
+                hintStyle: TextStyle(color: Colors.grey)
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

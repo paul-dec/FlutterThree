@@ -4,6 +4,7 @@ import 'package:adminapp/widgets/web_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'nftadd_page.dart';
 import 'nftdetails_page.dart';
 
 class NftPage extends StatefulWidget {
@@ -55,6 +56,14 @@ class _NftPageState extends State<NftPage> {
             },
           );
         }),
-    ));
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NftaddPage(nftuserid: _nftuserid))).then((value) => {if (value != Null && value == true) _refresh()});
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }

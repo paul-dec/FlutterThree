@@ -123,7 +123,6 @@ class _MainPageState extends State<MainPage> {
                                   );
                                   return;
                                 }
-                                _currentUser.delete();
                                 final collection = FirebaseFirestore.instance.collection('users');
                                 collection.doc(item.id) // <-- Doc ID to be deleted.
                                     .delete() // <-- Delete
