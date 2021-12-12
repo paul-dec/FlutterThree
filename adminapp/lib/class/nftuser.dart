@@ -1,24 +1,24 @@
 import 'package:adminapp/class/nftart.dart';
 
-class Nftuser {
+class NftUser {
   final String id;
   final String name;
   final String role;
-  final List<Nftart> nfts;
+  final List<NftArt> nfts;
 
-  Nftuser({required this.id, required this.name, required this.role, required this.nfts});
+  NftUser({required this.id, required this.name, required this.role, required this.nfts});
 
-  factory Nftuser.fromJson(Map<dynamic, dynamic> json, String id) {
+  factory NftUser.fromJson(Map<dynamic, dynamic> json, String id) {
     var tmp = json['NFT'];
-    List<Nftart> tmplist = [];
+    List<NftArt> tmpList = [];
     tmp.forEach((element) {
-      tmplist.add(Nftart.fromJson(element));
+      tmpList.add(NftArt.fromJson(element));
     });
-    return Nftuser(
+    return NftUser(
         id: id,
         name: json['name'],
         role: json['role'],
-        nfts: tmplist
+        nfts: tmpList
     );
   }
 }

@@ -2,41 +2,38 @@ import 'package:adminapp/class/nftart.dart';
 import 'package:adminapp/styles.dart';
 import 'package:adminapp/widgets/web_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class NftdetailsPage extends StatefulWidget {
-  final Nftart nft;
-  final String nftuserid;
-  final int nftnumber;
+class NftDetailsPage extends StatefulWidget {
+  final NftArt nft;
+  final String nftUserID;
+  final int nftNumber;
 
-  const NftdetailsPage({Key? key, required this.nft, required this.nftuserid, required this.nftnumber}) : super(key: key);
+  const NftDetailsPage({Key? key, required this.nft, required this.nftUserID, required this.nftNumber}) : super(key: key);
 
   @override
-  _NftdetailsPageState createState() => _NftdetailsPageState();
+  _NftDetailsPageState createState() => _NftDetailsPageState();
 }
-class _NftdetailsPageState extends State<NftdetailsPage> {
-  late Nftart _currentNft;
-  late String _nftuserid;
-  late String _nftname;
-  late String _nftimage;
-  late String _nftdesc;
-  late int _nftnumber;
-  // final TextEditingController _imageTextController = TextEditingController();
-  // final TextEditingController _nameTextController = TextEditingController();
-  // final TextEditingController _descriptionTextController = TextEditingController();
+class _NftDetailsPageState extends State<NftDetailsPage> {
+  late NftArt _currentNft;
+  late String _nftUserid;
+  late String _nftName;
+  late String _nftImage;
+  late String _nftDesc;
+  late int _nftNumber;
   late TextEditingController _imageTextController;
   late TextEditingController _nameTextController;
   late TextEditingController _descriptionTextController;
+  bool isChange = false;
 
   @override
   initState() {
     _currentNft = widget.nft;
-    _nftname = _currentNft.name;
-    _nftimage = _currentNft.image;
-    _nftdesc = _currentNft.desc;
-    _nftuserid = widget.nftuserid;
-    _nftnumber = widget.nftnumber;
+    _nftName = _currentNft.name;
+    _nftImage = _currentNft.image;
+    _nftDesc = _currentNft.desc;
+    _nftUserid = widget.nftUserID;
+    _nftNumber = widget.nftNumber;
     _imageTextController = TextEditingController(text: _currentNft.image);
     _nameTextController = TextEditingController(text: _currentNft.name);
     _descriptionTextController = TextEditingController(text: _currentNft.desc);
@@ -52,11 +49,12 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            Navigator.of(context).pop(isChange);
           },
         ),
         backgroundColor: ThemeColor.xPurple,
       ),
+<<<<<<< HEAD
       body:
        Column(
         children: [
@@ -91,47 +89,78 @@ class _NftdetailsPageState extends State<NftdetailsPage> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+=======
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+>>>>>>> 8559d3857f3b4468742743e838c3c625a7101bd8
             children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    var collection = FirebaseFirestore.instance.collection('users');
-                    var docSnapshot = await collection.doc(_nftuserid).get();
-                    Map<String, dynamic>? data = docSnapshot.data();
-                    data!['NFT'][_nftnumber]['desc'] = _descriptionTextController.text;
-                    data['NFT'][_nftnumber]['image'] = _imageTextController.text;
-                    data['NFT'][_nftnumber]['name'] = _nameTextController.text;
-                    collection.doc(_nftuserid).update(data);
-                    setState(() {
-                      _nftdesc = _descriptionTextController.text;
-                      _nftimage = _imageTextController.text;
-                      _nftname = _nameTextController.text;
-                    });
-                  },
-                  child: const Text(
-                    'Edit NFT',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+              WebImage(url: _nftImage),
+              Text(_nftName, style: ThemeText.whiteTextBold,),
+              Text(_nftDesc, style: ThemeText.whiteText,),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _imageTextController,
               ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    var collection = FirebaseFirestore.instance.collection('users');
-                    var docSnapshot = await collection.doc(_nftuserid).get();
-                    Map<String, dynamic>? data = docSnapshot.data();
-                    data!['NFT'].removeAt(_nftnumber);
-                    collection.doc(_nftuserid).update(data);
-                  },
-                  child: const Text(
-                    'Delete NFT',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+              const SizedBox(height: 8.0),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _nameTextController,
               ),
+              const SizedBox(height: 8.0),
+              TextField(
+                style: ThemeText.whiteText,
+                controller: _descriptionTextController,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        var collection = FirebaseFirestore.instance.collection('users');
+                        var docSnapshot = await collection.doc(_nftUserid).get();
+                        Map<String, dynamic>? data = docSnapshot.data();
+                        data!['NFT'][_nftNumber]['desc'] = _descriptionTextController.text;
+                        data['NFT'][_nftNumber]['image'] = _imageTextController.text;
+                        data['NFT'][_nftNumber]['name'] = _nameTextController.text;
+                        collection.doc(_nftUserid).update(data);
+                        isChange = true;
+                        setState(() {
+                          _nftDesc = _descriptionTextController.text;
+                          _nftImage = _imageTextController.text;
+                          _nftName = _nameTextController.text;
+                        });
+                      },
+                      child: const Text(
+                        'Edit NFT',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20,),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        var collection = FirebaseFirestore.instance.collection('users');
+                        var docSnapshot = await collection.doc(_nftUserid).get();
+                        Map<String, dynamic>? data = docSnapshot.data();
+                        data!['NFT'].removeAt(_nftNumber);
+                        collection.doc(_nftUserid).update(data);
+                        isChange = true;
+                      },
+                      child: const Text(
+                        'Delete NFT',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              )
             ],
           )
-        ],
+        ),
       )
     );
   }
